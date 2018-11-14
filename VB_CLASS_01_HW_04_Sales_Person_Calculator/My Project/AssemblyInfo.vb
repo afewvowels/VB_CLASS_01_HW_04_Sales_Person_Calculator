@@ -8,9 +8,9 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("VB_CLASS_01_HW_04_Sales_Person_Calculator")>
-<Assembly: AssemblyDescription("")>
-<Assembly: AssemblyCompany("")>
+<Assembly: AssemblyTitle("Sales Person Calculator")>
+<Assembly: AssemblyDescription("A simple calculator to come up with a pay and commission for a group of salespeople.")>
+<Assembly: AssemblyCompany("KBS, Inc.")>
 <Assembly: AssemblyProduct("VB_CLASS_01_HW_04_Sales_Person_Calculator")>
 <Assembly: AssemblyCopyright("Copyright ©  2018")>
 <Assembly: AssemblyTrademark("")>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")>
 
-<Assembly: AssemblyVersion("1.0.0.0")>
-<Assembly: AssemblyFileVersion("1.0.0.0")>
+<Assembly: AssemblyVersion("4.2.0.0")>
+<Assembly: AssemblyFileVersion("4.2.0.0")>

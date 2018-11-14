@@ -8,8 +8,9 @@ Option Explicit On
 Option Strict On
 
 Public Class SalesPerson
-    Private varName As String
-    Private varWeeklySales As Decimal
+    Private varNameString As String
+    Private varWeeklySalesDecimal As Decimal
+    Private varPayDecimal As Decimal
 
     Private Shared TotalSalesDecimal As Decimal
     Private Shared TotalCommissionDecimal As Decimal
@@ -19,75 +20,109 @@ Public Class SalesPerson
     Private Const BASE_SALARY_Decimal As Decimal = 250D
     Private Const QUOTA_Decimal As Decimal = 1000D
 
-    Public Sub New(ByVal _SalesPersonName As String, ByVal _SalesPersonSales As Decimal)
+    Public Sub New(ByVal _SalesPersonName As String, ByVal _SalesPersonSales As String)
+        ' Call property methods to validate incoming data and set the
+        ' values of internal variables
+        Name = _SalesPersonName
+        WeeklySales = _SalesPersonSales
 
+        ' Calculate pay variable
+        FindPay()
+
+        ' Update Running Totals
+        TotalSalesDecimal += varWeeklySalesDecimal
+        TotalCommissionDecimal += CalculateCommission(varWeeklySalesDecimal)
+        TotalPayDecimal += varPayDecimal
     End Sub
 
     ' Properties
+    ' Name property, takes in a string and validates that something
+    ' has been entered ("" <- empty string throws an exception)
     Public Property Name As String
         Get
-            Return varName
+            Return varNameString
         End Get
         Set(inName As String)
             If (inName <> "") Then
-                varName = inName
+                varNameString = inName
             Else
                 Throw New ArgumentOutOfRangeException("Name field must not be empty")
             End If
         End Set
     End Property
 
+    ' Property for adjusting the employee's weekly sales figures, takes
+    ' in a string and validates the input, throws errors if bad data
+    ' is provided
     Public Property WeeklySales As String
         Get
-            Return varWeeklySales.ToString("C")
+            Return varWeeklySalesDecimal.ToString("C")
         End Get
         Set(inSales As String)
             Dim tempSales As Decimal
-            Try
-                tempSales = Convert.ToDecimal(inSales)
 
-                If (tempSales >= 0) Then
-                    varWeeklySales = tempSales
-                Else
-                    Throw New ArgumentOutOfRangeException("Weekly sales must be greaer than or equal to $0.00.")
-                End If
-            Catch ex As Exception
-                MessageBox.Show("Must enter numerical data", "Bad Data Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-            End Try
+            ' Catch exception in main application
+            tempSales = Convert.ToDecimal(inSales)
+
+            If (tempSales >= 0) Then
+                varWeeklySalesDecimal = tempSales
+            Else
+                Throw New ArgumentOutOfRangeException("Weekly sales must be greaer than or equal to $0.00.")
+            End If
         End Set
     End Property
 
-    Public ReadOnly Property Commission As Decimal
+    ' Read-only property that returns this employee's commission for the week
+    Public ReadOnly Property Commission As String
         Get
-            If (varWeeklySales > QUOTA_Decimal) Then
-                Return varWeeklySales * COMMISSION_RATE_Decimal
-            Else
-                Return 0D
-            End If
+            Return CalculateCommission(varWeeklySalesDecimal).ToString("C")
         End Get
     End Property
 
-    Public ReadOnly Property Pay As Decimal
+    ' Read-only property that returns weekly pay for the current employee
+    ' as a currency formatted string
+    Public ReadOnly Property Pay As String
         Get
-            Return (varWeeklySales * COMMISSION_RATE_Decimal) + BASE_SALARY_Decimal
+            Return varPayDecimal.ToString("C")
         End Get
     End Property
 
-    Public Shared ReadOnly Property TotalSales As Decimal
+    ' Shared, read-only property that returns total sales
+    Public Shared ReadOnly Property TotalSales As String
         Get
-            Return TotalSalesDecimal
+            Return TotalSalesDecimal.ToString("C")
         End Get
     End Property
 
-    Public Shared ReadOnly Property TotalCommission As Decimal
+    ' Shared, read-only property that returns accumulated commisson
+    Public Shared ReadOnly Property TotalCommission As String
         Get
-            Return TotalCommissionDecimal
+            Return TotalCommissionDecimal.ToString("C")
         End Get
     End Property
 
-    Public Shared ReadOnly Property TotalPay As Decimal
+    ' Shared, read-only property that returns accumulated pay
+    Public Shared ReadOnly Property TotalPay As String
         Get
-            Return TotalPayDecimal
+            Return TotalPayDecimal.ToString("C")
         End Get
     End Property
+
+    ' Subroutines and Functions
+    ' Subroutine that updates the weekly pay decimal with commission (if inPay crosses threshold,
+    ' calculated in CalculateCommission(inPay) below
+    Sub FindPay()
+        varPayDecimal = CalculateCommission(varWeeklySalesDecimal) + BASE_SALARY_Decimal
+    End Sub
+
+    ' Function that returns the commission earned based on an incoming inPay variable and
+    ' two constants: the quota that sales must be greater than and the commission rate applied
+    ' to the incoming inPay variable.
+    Function CalculateCommission(ByVal inSalesDecimal As Decimal) As Decimal
+        If (inSalesDecimal > QUOTA_Decimal) Then
+            Return inSalesDecimal * COMMISSION_RATE_Decimal
+        Else
+            Return 0D
+        End If
+    End Function
 End Class
